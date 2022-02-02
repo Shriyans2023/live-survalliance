@@ -1,55 +1,55 @@
-img="";
-status="";
-objects=[];
-function setup() {
-    canvas = createCanvas(380, 380);
-    canvas.center();
-    video = createCapture(VIDEO);
-    video.size(380,380);
-    video.hide();
-    objectDetector=ml5.objectDetector('cocossd', modelLoaded);
-    document.getElementById('status').innerHTML="status: Detecting Objects";
+x = 0;
+y = 0;
+draw_circle = "";
+draw_rect = "";
+
+var SpeechRecognition = window.webkitSpeechRecognition;
+
+var recognition = new SpeechRecognition();
+
+function start()
+{
+    document.getElementById("status").innerHTML = "System is listening please speak";
+    recognition.start();
 }
 
-function modelLoaded () {
-    console.log("ModelLoaded!")
-    status=true;
-    objectDetector.detect(video, gotResults);
-}
+recognition.onresult = function(event) {
+    console.log(event);
+    var content = event.results[0][0].transcript;
 
-function gotResults(error,results) {
-    if(error) {
-        console.log(error);
+    document.getElementById("status").innerHTML= "The Speech has been recognized as: " + content;
+    if(content=="circle")
+    {
+        x = Math.floor(Math.random() * 900);
+        y = Math.floor(Math.random() * 600);
+        document.getElementById("status").innerHTML = "Started drawing circles ";
+        draw_circle="set";
     }
-    console.log(results);
-
-    object = results;
+    if(content=="rectangle")
+    {
+        x = Math.floor(Math.random() * 900);
+        y = Math.floor(Math.random() * 600);
+        document.getElementById("status").innerHTML = "Started drawing rectangles ";
+        draw_rect="set";
+    }
 }
 
-
-function preload() {
-img=loadImage('dog_cat.jpg');
+function setup() { 
+    canvas= createCanvas(900,600);
 }
 
 function draw() {
-    image (video,0,0,380,380);
-if (status != "" )
-{
-    r = random(255);
-    g = random(255);
-    b = random(255);
-    objectDetector.detect(video, gotResults);
-    for (i = 0; i < objects.length; i++) {
-        document.getElementById("status").innerHtml = "Status : Object Detected";
-        document.getElementById("number_of_objects").innerHtml = "Number of objects detected are " + objects.length;
-        fill(r,g,b);
-        percent = floor(objects[i].confidence*100);
-    text(objects[i].label + ""+ percent + "%", objects[i].x + 15, objects[i].y + 15);
-    noFill();
-    stroke(r,g,b);
-    rect(objects[i].x, objects[i].y,objects[i].width, objects[i].height);
-
+    if(draw_circle=="set")
+    {
+        radius = Math.floor(math.random() * 100);
+        circle(x,y,radius);
+        document.getElementById("status").innerHTML= "Circle is drawn. ";
+        draw_circle="";
     }
-}
-
-}
+    if(draw_rect=="set")
+    {
+        rect(x,y,70,50);
+        document.getElementById("status").innerHTML= "Rectangle is drawn. ";
+        draw_rect="";
+    }
+    }
